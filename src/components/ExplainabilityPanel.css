@@ -1,0 +1,36 @@
+﻿.explain {
+  background: #ffffff;
+  padding: clamp(18px, 3vw, 24px);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+
+  width: 100%;
+  max-width: 1440px;    /* 可根据 app max-width 调整 */
+  margin: 0 auto;
+
+  /* 横跨整个 grid */
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+}
+
+
+.explain__summary {
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.explain ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #334155;
+}
+
+.explain li {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 600px) {
+  .explain ul {
+    padding-left: 16px;
+  }
+}
