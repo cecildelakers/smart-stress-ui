@@ -1,0 +1,42 @@
+﻿# Patient Monitoring Dashboard (React Demo)
+
+This React + Vite project recreates the wireframed patient monitoring console. It mirrors the original Streamlit draft, but all interactions run in the browser with mocked data so you can refine the layout before connecting to the Dify API.
+
+## Features
+- Patient header with key metadata pulled from `mockData.js`.
+- Detection panel with interactive 24h/7d toggle and Recharts time-series graph.
+- Explainability panel that swaps guidance text based on the active range.
+- Chatbot area with demo responses via `sendChatMessageDemo` (the real Dify call is stubbed in `services/difyClient.js`).
+- Quick action cards for surveys, predictions, manual notes, and downloading sample reports from `public/reports`.
+
+## Getting Started
+
+```bash
+cd react-ui
+npm install
+npm run dev
+```
+
+Open the printed local URL (default `http://localhost:5173`) to view the dashboard.
+
+### Preparing Dify Integration
+1. Replace the demo helpers in `src/services/difyClient.js` with live Axios calls (the template is already commented in the file).
+2. Store your API key in `.env` as `VITE_DIFY_API_KEY=...` and restart the dev server.
+3. Swap the imports inside `ChatPanel.jsx` and `QuickActions.jsx` to call the real functions.
+
+## Developer Testing Checklist
+- **Install prerequisites:** Ensure Node.js 18+ and npm are available. After unpacking the project, run `npm install` from the `react-ui/` directory.
+- **Run the demo:** Use `npm run dev` and open the printed local address to confirm the mock data renders correctly.
+- **Configure Dify access:** Create `.env` (or `.env.local`) with `VITE_DIFY_API_KEY=<your key>`. Uncomment the real Axios calls in `src/services/difyClient.js` and adjust endpoints or payloads if your workspace differs.
+- **Switch to live handlers:** Update `ChatPanel.jsx` and `QuickActions.jsx` to import the real helpers (e.g., `sendChatMessage`) instead of the demo versions.
+- **Verify responses:** With the dev server running, send a few chat prompts and trigger the quick actions to make sure backend responses flow through and the UI handles errors gracefully.
+- **Optional QA:** Run `npm run build` to ensure production bundling still succeeds after integration; add lint/test scripts if your team requires them.
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+The build command emits a production-ready bundle in `dist/`.

@@ -1,0 +1,3 @@
+﻿Monthly Report for Patient 1
+
+Summary: Consistent improvement across HRV and questionnaire adherence metrics.
