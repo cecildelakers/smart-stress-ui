@@ -12,7 +12,7 @@ This React + Vite project recreates the wireframed patient monitoring console. I
 ## Getting Started
 
 ```bash
-cd react-ui
+cd smart-stress-ui
 npm install
 npm run dev
 ```
@@ -25,7 +25,7 @@ Open the printed local URL (default `http://localhost:5173`) to view the dashboa
 3. Swap the imports inside `ChatPanel.jsx` and `QuickActions.jsx` to call the real functions.
 
 ## Developer Testing Checklist
-- **Install prerequisites:** Ensure Node.js 18+ and npm are available. After unpacking the project, run `npm install` from the `react-ui/` directory.
+- **Install prerequisites:** Ensure Node.js 18+ and npm are available. After unpacking the project, run `npm install` from the `smart-stress-ui/` directory.
 - **Run the demo:** Use `npm run dev` and open the printed local address to confirm the mock data renders correctly.
 - **Configure Dify access:** Create `.env` (or `.env.local`) with `VITE_DIFY_API_KEY=<your key>`. Uncomment the real Axios calls in `src/services/difyClient.js` and adjust endpoints or payloads if your workspace differs.
 - **Switch to live handlers:** Update `ChatPanel.jsx` and `QuickActions.jsx` to import the real helpers (e.g., `sendChatMessage`) instead of the demo versions.

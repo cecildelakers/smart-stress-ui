@@ -1,134 +1,142 @@
 ﻿.detection {
-  background: #ffffff;
-  padding: clamp(18px, 3vw, 24px);
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    background: #ffffff;
+    padding: clamp(18px, 3vw, 24px);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 520px;
+    max-height: 520px;
+    width: 100%;
 }
 
 .detection__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between; /* 保持标题左，toggle右 */
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .detection__toggle {
-  display: inline-flex;
-  background: #e2e8f0;
-  border-radius: 999px;
-  padding: 4px;
-  gap: 8px;
+    display: inline-flex;
+    background: #e2e8f0;
+    border-radius: 999px;
+    padding: 4px;
+    gap: 8px;
 }
 
 .detection__toggle-btn {
-  border: none;
-  background: transparent;
-  padding: 6px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  color: #475569;
-  font-weight: 600;
-  transition: background 0.2s, color 0.2s;
+    border: none;
+    background: transparent;
+    padding: 6px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: #475569;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
 }
 
 .detection__toggle-btn--active {
-  background: #2563eb;
-  color: #ffffff;
+    background: #2563eb;
+    color: #ffffff;
 }
 
 .detection__body {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
-  gap: 24px;
-  align-items: stretch;
+    display: grid;
+    grid-template-columns: 4fr 1fr; /* 图表占更大比例，信号栏固定 */
+    gap: 16px; /* 减少空白 */
+    align-items: stretch;
+    height: 100%; /* 占满父容器 */
 }
 
 .detection__chart {
-  min-height: 360px;
-  display: flex;
+    display: flex;
+    flex: 1;
+    width: 100%;
+    height: 100%;
 }
 
 .detection__chart > * {
-  flex: 1;
+    flex: 1;
+    width: 100%;
+    height: 100%;
 }
 
 .detection__signals {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 避免底部空白 */
 }
 
 .detection__signals ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .signal__label {
-  font-weight: 600;
-  display: block;
+    font-weight: 600;
+    display: block;
 }
 
 .signal__value {
-  color: #2563eb;
-  font-size: 1.1rem;
-  display: block;
+    color: #2563eb;
+    font-size: 1.1rem;
+    display: block;
 }
 
 .signal__note {
-  color: #64748b;
-  font-size: 0.85rem;
+    color: #64748b;
+    font-size: 0.85rem;
 }
 
 @media (max-width: 1024px) {
-  .detection__body {
-    grid-template-columns: 1fr;
-  }
+    .detection__body {
+        grid-template-columns: 1fr;
+    }
 
-  .detection__signals {
-    justify-content: flex-start;
-  }
+    .detection__signals {
+        justify-content: flex-start;
+    }
 
-  .detection__signals ul {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
+    .detection__signals ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
 
-  .detection__signals li {
-    min-width: 140px;
-  }
+    .detection__signals li {
+        min-width: 140px;
+    }
 }
 
 @media (max-width: 600px) {
-  .detection__header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .detection__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-  .detection__toggle {
-    width: 100%;
-    justify-content: space-between;
-  }
+    .detection__toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
 
-  .detection__toggle-btn {
-    flex: 1;
-    text-align: center;
-  }
+    .detection__toggle-btn {
+        flex: 1;
+        text-align: center;
+    }
 
-  .detection__signals ul {
-    flex-direction: column;
-    gap: 12px;
-  }
+    .detection__signals ul {
+        flex-direction: column;
+        gap: 12px;
+    }
 
-  .detection__signals li {
-    min-width: unset;
-  }
+    .detection__signals li {
+        min-width: unset;
+    }
 }
