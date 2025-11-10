@@ -1,5 +1,6 @@
 ﻿import {useState, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
+import ReactMarkdown from 'react-markdown';
 import {sendChatMessageStream} from '../services/difyClient.js';
 import './ChatPanel.css';
 
@@ -77,7 +78,13 @@ function ChatPanel({initialMessages, statusUpdates}) {
             >
                 {messages.map((message, index) => (
                     <div key={`${message.role}-${index}`} className={`chat__bubble chat__bubble--${message.role}`}>
-                        <span>{message.content}</span>
+                        {message.role === 'assistant' ? (
+                            <div className="chat__markdown">
+                                <ReactMarkdown>{message.content}</ReactMarkdown>
+                            </div>
+                        ) : (
+                            <span>{message.content}</span>
+                        )}
                     </div>
                 ))}
             </div>

@@ -35,6 +35,137 @@
     color: #ffffff;
 }
 
+.chat__markdown {
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+
+.chat__markdown p {
+    margin: 0 0 8px 0;
+}
+
+.chat__markdown p:last-child {
+    margin-bottom: 0;
+}
+
+.chat__markdown h1,
+.chat__markdown h2,
+.chat__markdown h3,
+.chat__markdown h4,
+.chat__markdown h5,
+.chat__markdown h6 {
+    margin: 12px 0 8px 0;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.chat__markdown h1:first-child,
+.chat__markdown h2:first-child,
+.chat__markdown h3:first-child,
+.chat__markdown h4:first-child,
+.chat__markdown h5:first-child,
+.chat__markdown h6:first-child {
+    margin-top: 0;
+}
+
+.chat__markdown ul,
+.chat__markdown ol {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.chat__markdown li {
+    margin: 4px 0;
+}
+
+.chat__markdown code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'Courier New', monospace;
+}
+
+.chat__markdown pre {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.chat__markdown pre code {
+    background: transparent;
+    padding: 0;
+}
+
+.chat__markdown blockquote {
+    border-left: 3px solid rgba(0, 0, 0, 0.2);
+    padding-left: 12px;
+    margin: 8px 0;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.chat__markdown a {
+    color: inherit;
+    text-decoration: underline;
+    opacity: 0.9;
+}
+
+.chat__markdown a:hover {
+    opacity: 1;
+}
+
+.chat__markdown table {
+    border-collapse: collapse;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.chat__markdown th,
+.chat__markdown td {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    text-align: left;
+}
+
+.chat__markdown th {
+    background: rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+.chat__bubble--user .chat__markdown {
+    color: #ffffff;
+}
+
+.chat__bubble--user .chat__markdown code {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.chat__bubble--user .chat__markdown pre {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.chat__bubble--user .chat__markdown blockquote {
+    border-left-color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.chat__bubble--user .chat__markdown a {
+    color: #ffffff;
+    opacity: 0.95;
+}
+
+.chat__bubble--user .chat__markdown th,
+.chat__bubble--user .chat__markdown td {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.chat__bubble--user .chat__markdown th {
+    background: rgba(255, 255, 255, 0.15);
+}
+
 .chat__form {
     display: flex;
     gap: 12px;
