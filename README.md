@@ -1,45 +1,107 @@
-﻿# Patient Monitoring Dashboard (React Demo)
+﻿# Smart Stress UI
 
-This React + Vite project recreates the wireframed patient monitoring console. It mirrors the original Streamlit draft, but all interactions run in the browser with mocked data so you can refine the layout before connecting to the Dify API.
+Smart Stress UI is a Vite + React single-page application that prototypes a stress-monitoring console. It now supports both patient-facing and doctor-facing dashboards, each backed by configurable mock data so product teams can iterate on visuals and workflows before connecting real APIs.
 
-## Features
-- Patient header with key metadata pulled from `mockData.js`.
-- Detection panel with interactive 24h/7d toggle and Recharts time-series graph.
-- Explainability panel that swaps guidance text based on the active range.
-- Chatbot area with demo responses via `sendChatMessageDemo` (the real Dify call is stubbed in `services/difyClient.js`).
-- Quick action cards for surveys, predictions, manual notes, and downloading sample reports from `public/reports`.
+---
+
+## At a Glance
+- React 18 with functional components and hooks
+- Light, responsive UI built with plain CSS modules per component
+- Mocked telemetry + survey data defined in `src/mockData.js`
+- Optional Dify chat integration stubbed via `src/services/difyClient.js`
+- Patient/Doctor tab switcher rendered entirely client-side
+
+---
+
+## Views
+
+### Patient Dashboard
+- Header shows patient demographics, care team, and last refresh timestamp.
+- Detection panel combines a timeline chart (`TimelineChart.jsx`) with live signal cards and 24h/7d toggle.
+- Explainability panel surfaces contextual guidance tied to the selected range.
+- Chat panel replays scripted assistant responses; replace with real Dify calls when ready.
+- Quick actions provide shortcuts to surveys, predictions, notes, and sample reports stored under `public/reports/`.
+
+### Doctor Dashboard
+- Overview cards summarize stress-level proportions, total monitored patients, and survey counts.
+- HRV trend sparkline highlights cohort-level signal shifts.
+- Patient table surfaces per-person vitals, program enrollment, stress indices, and survey recency (mocked data aligns with the patient view for Patient 1).
+- CTA buttons prompt next steps for multidisciplinary teams.
+
+---
+
+## Project Structure
+```
+smart-stress-ui/
+├─ public/               # Static assets and downloadable report samples
+├─ src/
+│  ├─ components/        # React components and scoped CSS
+│  ├─ services/          # Dify API client stub
+│  ├─ mockData.js        # Central mock data definitions
+│  ├─ App.jsx            # View switcher and main layout
+│  └─ main.jsx           # Entry point mounting <App />
+└─ vite.config.js        # Vite configuration
+```
+
+---
 
 ## Getting Started
 
+### Requirements
+- Node.js 18 or higher
+- npm 9+
+
+### Installation
 ```bash
 cd smart-stress-ui
 npm install
 npm run dev
 ```
 
-Open the printed local URL (default `http://localhost:5173`) to view the dashboard.
+The development server opens on `http://localhost:5173` (configure via Vite if needed).
 
-### Preparing Dify Integration
-1. Replace the demo helpers in `src/services/difyClient.js` with live Axios calls (the template is already commented in the file).
-2. Store your API key in `.env` as `VITE_DIFY_API_KEY=...` and restart the dev server.
-3. Swap the imports inside `ChatPanel.jsx` and `QuickActions.jsx` to call the real functions.
+---
 
-## Developer Testing Checklist
-- **Install prerequisites:** Ensure Node.js 18+ and npm are available. After unpacking the project, run `npm install` from the `smart-stress-ui/` directory.
-- **Run the demo:** Use `npm run dev` and open the printed local address to confirm the mock data renders correctly.
-- **Configure Dify access:** Create `.env` (or `.env.local`) with `VITE_DIFY_API_KEY=<your key>`. Uncomment the real Axios calls in `src/services/difyClient.js` and adjust endpoints or payloads if your workspace differs.
-- **Switch to live handlers:** Update `ChatPanel.jsx` and `QuickActions.jsx` to import the real helpers (e.g., `sendChatMessage`) instead of the demo versions.
-- **Verify responses:** With the dev server running, send a few chat prompts and trigger the quick actions to make sure backend responses flow through and the UI handles errors gracefully.
-- **Optional QA:** Run `npm run build` to ensure production bundling still succeeds after integration; add lint/test scripts if your team requires them.
+## Available Scripts
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite development server with hot reloading |
+| `npm run build` | Create optimized production bundle in `dist/` |
+| `npm run preview` | Serve the production build locally |
 
-## Build
+---
 
-```bash
-npm run build
-npm run preview
-```
+## Configuring Dify (Optional)
+1. Duplicate `.env.example` (or create `.env`) with `VITE_DIFY_API_KEY=<your-key>`.
+2. Replace the demo helpers in `src/services/difyClient.js` with the live Axios implementation (template included).
+3. Update `ChatPanel.jsx` and `QuickActions.jsx` to import the real API helper functions.
+4. Restart `npm run dev` and verify chat/quick-action requests return expected responses.
 
-The build command emits a production-ready bundle in `dist/`.
+---
 
-## Warning: 
+## Customizing Mock Data
+All mock values—including patient vitals, time-series samples, doctor view totals, and action labels—live inside `src/mockData.js`. Update these objects to:
+- Simulate different stress cohorts
+- Align the doctor table with real program metadata
+- Add alternate doctor actions or survey counts
+
+Whenever you edit the generation logic (e.g., time series ranges), restart the dev server to view fresh data.
+
+---
+
+## Testing Checklist
+- `npm run dev` renders both tabs without console errors.
+- Toggle between patient and doctor tabs; verify data stays consistent for Patient 1.
+- Switch the detection range between 24h and 7d and confirm charts/text update.
+- Trigger each quick action and chat prompt to ensure UI states respond gracefully (mocked responses are synchronous).
+- Run `npm run build` prior to deployment or sharing static previews.
+
+---
+
+## Notes
+- Styling uses plain CSS files imported alongside components. Extend or replace them with Tailwind, MUI, etc., as your design system evolves.
+- Chart rendering is handled by a lightweight SVG implementation for the doctor view and by Recharts in the patient timeline; swap in other charting libs if you prefer.
+- Portions of this codebase originated from AI-assisted drafts—treat the mock data and client stubs as placeholders and audit before production use.
+
+## Warning 
 Some code in this project is generated by AI and maintained solely by AI. The author does not write code or understand security, and has long relied on Vibe for thought. If there are any AI-related pull requests, please share them.
