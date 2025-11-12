@@ -11,7 +11,7 @@ export const VITAL_SNAPSHOT = [
   { id: "ecg", label: "ECG", value: "Sinus", note: "Normal rhythm" },
   { id: "bpm", label: "BPM", value: "78 bpm", note: "+3 vs baseline" },
   { id: "hrv", label: "HRV", value: "54 ms", note: "Stable" },
-  { id: "stress", label: "Stress Index", value: "0.32", note: "Low" }
+  { id: "stress", label: "Stress Index", value: "2", note: "Low" }
 ];
 
 // Generate yesterday's date for 24h time series
@@ -44,31 +44,31 @@ function generate24hTimeSeries() {
 
     if (localIndex === 0) {
       // 08:00 - start rising from high-70s
-      bpm = randomInRange(76, 80);
+      bpm = randomInRange(80, 85);
     } else if (localIndex === 1) {
       // 09:00
-      bpm = randomInRange(80, 85);
+      bpm = randomInRange(84, 88);
     } else if (localIndex === 2) {
       // 10:00
-      bpm = randomInRange(84, 88);
+      bpm = randomInRange(110, 114);
     } else if (localIndex >= 3 && localIndex <= 9) {
       // 11:00 - 17:00 daytime activity with variation
       bpm = randomInRange(82, 100);
     } else if (localIndex === 10) {
       // 18:00 sudden peak > 110
-      bpm = randomInRange(110, 114);
+      bpm = randomInRange(84, 88);
     } else if (localIndex === 11) {
       // 19:00 peak sustained (about 20min represented within the hour)
-      bpm = randomInRange(105, 110);
+      bpm = randomInRange(90, 95);
     } else if (localIndex === 12) {
       // 20:00 start returning
-      bpm = randomInRange(92, 98);
+      bpm = randomInRange(85, 92);
     } else if (localIndex >= 13 && localIndex <= 15) {
       // 21:00 - 23:00 evening cool down
-      bpm = randomInRange(80, 92);
+      bpm = randomInRange(80, 88);
     } else {
       // 00:00 - 07:00 resting heart rate
-      bpm = randomInRange(50, 60);
+      bpm = randomInRange(58, 69);
     }
 
     timeSeries.push({
