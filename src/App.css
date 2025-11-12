@@ -8,6 +8,46 @@
   gap: clamp(16px, 3vw, 28px);
 }
 
+.app__tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid #dfe4f5;
+  background: linear-gradient(120deg, rgba(91, 123, 250, 0.08), rgba(91, 123, 250, 0.02));
+  align-self: flex-start;
+}
+
+.app__tab-button {
+  border: none;
+  background: transparent;
+  color: #445175;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app__tab-button:hover {
+  background: rgba(91, 123, 250, 0.12);
+}
+
+.app__tab-button--active {
+  background: #5b7bfa;
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(91, 123, 250, 0.28);
+}
+
+.app__panel {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vw, 28px);
+  width: 100%;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.4fr);

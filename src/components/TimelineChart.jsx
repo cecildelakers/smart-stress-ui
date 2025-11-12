@@ -10,19 +10,48 @@ function formatLabel(item, timeRange) {
 }
 
 function TimelineChart({ data, timeRange }) {
+  // Custom tick formatter to show labels at specific indices
+  // Start at 00:00 and display a label every 2 hours (00:00, 02:00, ... , 22:00)
+  const tickFormatter = (value, index) => {
+    if (timeRange === '24h' && data && data.length > 0 && index !== undefined) {
+      // Get the hour from the data point
+      const hour = new Date(data[index]?.timestamp).getHours();
+
+      // Show 00:00 and every 2 hours (hour % 2 === 0)
+      if (hour % 2 === 0) {
+        return `${hour.toString().padStart(2, '0')}:00`;
+      }
+
+      // Optionally show 24:00 label if last tick corresponds to midnight (hour 0) but not index 0
+      if (hour === 0 && index === data.length - 1) {
+        return '24:00';
+      }
+
+      // Hide other ticks
+      return '';
+    }
+    return value;
+  };
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <ResponsiveContainer>
-        <LineChart data={data} margin={{ top: 16, right: 24, left: 0, bottom: 8 }}>
+        <LineChart data={data} margin={{ top: 16, right: 24, left: 0, bottom: 50 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis
+            type="category"
             dataKey={(entry) => formatLabel(entry, timeRange)}
             tick={{ fontSize: 12, fill: '#475569' }}
             tickLine={false}
             axisLine={{ stroke: '#cbd5f5' }}
+            interval={0}
+            tickFormatter={tickFormatter}
+            angle={-45}
+            textAnchor="end"
+            height={60}
           />
           <YAxis
-            domain={[60, 90]}
+            domain={[45, 115]}
             tick={{ fontSize: 12, fill: '#475569' }}
             tickLine={false}
             axisLine={{ stroke: '#cbd5f5' }}

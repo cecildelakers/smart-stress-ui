@@ -4,13 +4,15 @@ import DetectionPanel from './components/DetectionPanel.jsx';
 import ExplainabilityPanel from './components/ExplainabilityPanel.jsx';
 import ChatPanel from './components/ChatPanel.jsx';
 import QuickActions from './components/QuickActions.jsx';
+import DoctorDashboard from './components/DoctorDashboard.jsx';
 import {
     PATIENT_PROFILE,
     VITAL_SNAPSHOT,
     TIME_SERIES,
     EXPLANATIONS,
     STATUS_UPDATES,
-    SURVEY_QUESTIONS
+    SURVEY_QUESTIONS,
+    DOCTOR_OVERVIEW
 } from './mockData.js';
 import './App.css';
 
@@ -32,6 +34,7 @@ function formatCurrentTime() {
 }
 
 function App() {
+    const [activeTab, setActiveTab] = useState('patient');
     const [timeRange, setTimeRange] = useState('24h');
     const [lastRefresh, setLastRefresh] = useState(formatCurrentTime());
     const explanation = EXPLANATIONS[timeRange];
@@ -48,22 +51,54 @@ function App() {
 
     return (
         <div className="app">
-            <HeaderBar profile={profileWithRefresh}/>
-            <main className="layout">
-                <div className="layout__left">
-                    <DetectionPanel
-                        timeSeries={TIME_SERIES}
-                        signals={VITAL_SNAPSHOT}
-                        timeRange={timeRange}
-                        onTimeRangeChange={setTimeRange}
-                    />
+            <div className="app__tabs" role="tablist" aria-label="Dashboard mode">
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'patient'}
+                    className={activeTab === 'patient' ? 'app__tab-button app__tab-button--active' : 'app__tab-button'}
+                    onClick={() => setActiveTab('patient')}
+                    id="tab-patient"
+                    aria-controls="panel-patient"
+                >
+                    For patient
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'doctor'}
+                    className={activeTab === 'doctor' ? 'app__tab-button app__tab-button--active' : 'app__tab-button'}
+                    onClick={() => setActiveTab('doctor')}
+                    id="tab-doctor"
+                    aria-controls="panel-doctor"
+                >
+                    For doctors
+                </button>
+            </div>
+            {activeTab === 'patient' ? (
+                <div id="panel-patient" role="tabpanel" aria-labelledby="tab-patient" className="app__panel">
+                    <HeaderBar profile={profileWithRefresh}/>
+                    <main className="layout">
+                        <div className="layout__left">
+                            <DetectionPanel
+                                timeSeries={TIME_SERIES}
+                                signals={VITAL_SNAPSHOT}
+                                timeRange={timeRange}
+                                onTimeRangeChange={setTimeRange}
+                            />
+                        </div>
+                        <div className="layout__right">
+                            <ChatPanel initialMessages={INITIAL_MESSAGES} statusUpdates={STATUS_UPDATES}/>
+                        </div>
+                        <ExplainabilityPanel summary={explanation.summary} actions={explanation.actions}/>
+                    </main>
+                    <QuickActions surveyQuestions={SURVEY_QUESTIONS}/>
                 </div>
-                <div className="layout__right">
-                    <ChatPanel initialMessages={INITIAL_MESSAGES} statusUpdates={STATUS_UPDATES}/>
+            ) : (
+                <div id="panel-doctor" role="tabpanel" aria-labelledby="tab-doctor" className="app__panel">
+                    <DoctorDashboard overview={DOCTOR_OVERVIEW} patientProfile={profileWithRefresh}/>
                 </div>
-                <ExplainabilityPanel summary={explanation.summary} actions={explanation.actions}/>
-            </main>
-            <QuickActions surveyQuestions={SURVEY_QUESTIONS}/>
+            )}
         </div>
     );
 }

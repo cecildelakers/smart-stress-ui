@@ -1,21 +1,40 @@
-﻿import {useState} from 'react';
+﻿import {useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import {getPredictionDemo} from '../services/difyClient.js';
+import {PATIENT_PROFILE} from '../mockData.js';
 import './QuickActions.css';
 
 function QuickActions({surveyQuestions}) {
     const [surveyOpen, setSurveyOpen] = useState(false);
-    const [surveyState, setSurveyState] = useState({});
+    const [surveyState, setSurveyState] = useState({}); // { [questionId]: 1..5 }
     const [surveyConfirmed, setSurveyConfirmed] = useState(false);
     const [surveyError, setSurveyError] = useState('');
     const [toast, setToast] = useState(null);
+
+    // SSSQ: Short Stress State Questionnaire (6 items, Likert 1-5)
+    const SSSQ_QUESTIONS = useMemo(() => ([
+        { id: 'q1', text: 'I was committed to attaining my performance goals' },
+        { id: 'q2', text: 'I wanted to succeed on the task' },
+        { id: 'q3', text: 'I was motivated to do the task' },
+        { id: 'q4', text: 'I reflected about myself' },
+        { id: 'q5', text: 'I was worried about what other people think of me' },
+        { id: 'q6', text: 'I felt concerned about the impression I was making' }
+    ]), []);
+
+    const SSSQ_OPTIONS = useMemo(() => ([
+        { value: 1, label: 'Not at all' },
+        { value: 2, label: 'A little bit' },
+        { value: 3, label: 'Somewhat' },
+        { value: 4, label: 'Very much' },
+        { value: 5, label: 'Extremely' }
+    ]), []);
 
     const toggleSurvey = () => {
         if (!surveyConfirmed) setSurveyOpen((prev) => !prev);
     };
 
-    const handleSurveyChange = (question, value) => {
-        setSurveyState((prev) => ({...prev, [question]: value}));
+    const handleSurveyChange = (questionId, value) => {
+        setSurveyState((prev) => ({...prev, [questionId]: Number(value)}));
     };
 
     const handleSurveyClose = () => {
@@ -24,23 +43,54 @@ function QuickActions({surveyQuestions}) {
     };
 
     const handleSurveyConfirm = () => {
-        const allFilled =
-            surveyState.stressLevel &&
-            surveyState.mindfulness &&
-            surveyState.comments &&
-            surveyState.stressLevel.trim() !== '' &&
-            surveyState.mindfulness.trim() !== '' &&
-            surveyState.comments.trim() !== '';
+        // Validate: all 6 answers present (values 1..5)
+        const allFilled = SSSQ_QUESTIONS.every(q => typeof surveyState[q.id] === 'number');
 
         if (!allFilled) {
             setSurveyError('Please fill in all fields before confirming.');
             return;
         }
 
+        // Build survey record
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const patientName = PATIENT_PROFILE?.name || 'patient';
+
+        const findLabel = (value) => (SSSQ_OPTIONS.find(o => o.value === value)?.label || '');
+        const totalScore = SSSQ_QUESTIONS.reduce((sum, q) => sum + (surveyState[q.id] || 0), 0);
+
+        const lines = [
+            `Survey: Short Stress State Questionnaire (SSSQ)`,
+            `Patient: ${patientName}`,
+            `Date: ${yyyy}-${mm}-${dd}`,
+            ``,
+            ...SSSQ_QUESTIONS.map((q, idx) => {
+                const val = surveyState[q.id];
+                return `${idx + 1}. ${q.text}\n   Answer: ${findLabel(val)} (${val})`;
+            }),
+            ``,
+            `Total Score: ${totalScore}`
+        ];
+
+        const fileContent = lines.join('\n');
+        const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const filename = `${patientName.replace(/\s+/g, '')}_survey_${yyyy}_${mm}_${dd}.txt`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
         setSurveyConfirmed(true);
         setSurveyOpen(false);
         setSurveyError('');
-        setToast('Survey confirmed. Thank you!');
+        setToast('Survey submitted and downloaded. Thank you!');
     };
 
 
@@ -102,61 +152,27 @@ function QuickActions({surveyQuestions}) {
             {surveyOpen && !surveyConfirmed && (
                 <div className="survey-modal">
                     <div className="survey-modal__content">
-                        <h4>Daily Survey</h4>
+                        <h4>Short Stress State Questionnaire (SSSQ)</h4>
 
-                        {/* 第一个问题：Stress level 1-5 */}
-                        <div className="survey-question">
-                            <span>How would you rate your current stress level?</span>
-                            <div className="survey-options">
-                                {[1, 2, 3, 4, 5].map((level) => (
-                                    <label key={level}>
-                                        <input
-                                            type="radio"
-                                            name="stressLevel"
-                                            value={level}
-                                            checked={surveyState['stressLevel'] === String(level)}
-                                            onChange={(e) =>
-                                                setSurveyState((prev) => ({...prev, stressLevel: e.target.value}))
-                                            }
-                                        />
-                                        {level}
-                                    </label>
-                                ))}
+                        {SSSQ_QUESTIONS.map((q) => (
+                            <div className="survey-question" key={q.id}>
+                                <span>{q.text}</span>
+                                <div className="survey-options">
+                                    {SSSQ_OPTIONS.map((opt) => (
+                                        <label key={opt.value}>
+                                            <input
+                                                type="radio"
+                                                name={q.id}
+                                                value={opt.value}
+                                                checked={surveyState[q.id] === opt.value}
+                                                onChange={(e) => handleSurveyChange(q.id, e.target.value)}
+                                            />
+                                            {opt.label}
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-
-                        {/* 第二个问题：Mindfulness completed Yes/No */}
-                        <div className="survey-question">
-                            <span>Did you complete your mindfulness exercise today?</span>
-                            <div className="survey-options">
-                                {['Yes', 'No'].map((option) => (
-                                    <label key={option}>
-                                        <input
-                                            type="radio"
-                                            name="mindfulness"
-                                            value={option}
-                                            checked={surveyState['mindfulness'] === option}
-                                            onChange={(e) =>
-                                                setSurveyState((prev) => ({...prev, mindfulness: e.target.value}))
-                                            }
-                                        />
-                                        {option}
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* 第三个问题：保持文本输入 */}
-                        <div className="survey-question">
-                            <span>Any other comments?</span>
-                            <input
-                                type="text"
-                                value={surveyState['comments'] || ''}
-                                onChange={(e) =>
-                                    setSurveyState((prev) => ({...prev, comments: e.target.value}))
-                                }
-                            />
-                        </div>
+                        ))}
 
                         {/* 按钮区域 */}
                         <div className="survey-modal__buttons">
@@ -165,7 +181,7 @@ function QuickActions({surveyQuestions}) {
                                 Close
                             </button>
                             <button type="button" className="card__primary" onClick={handleSurveyConfirm}>
-                                Confirm
+                                Submit
                             </button>
                         </div>
                     </div>
