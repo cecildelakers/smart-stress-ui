@@ -83,6 +83,8 @@ button:disabled,
     flex-direction: column;
     gap: 12px;
     width: clamp(300px, 90%, 500px);
+    max-height: 80vh;       /* 限制最大高度为视口的80% */
+    overflow-y: auto;       /* 内容超出时出现滚动条 */
 }
 
 .survey-modal__content label {
