@@ -96,7 +96,7 @@ export const TIME_SERIES = {
 export const EXPLANATIONS = {
     "24h": {
         summary:
-            "24-hour trend remains stable with a mild midday peak aligned with questionnaire feedback.",
+            "24-hour trend remains stable with a early-midday peak aligned with questionnaire feedback.",
         actions: [
             "Encourage a guided breathing session before lunch.",
             "Monitor hydration to reduce midday spikes."
