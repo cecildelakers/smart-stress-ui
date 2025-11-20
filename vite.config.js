@@ -5,5 +5,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    proxy: {
+      '/chat': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/predict': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
   },
 });

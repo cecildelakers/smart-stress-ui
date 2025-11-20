@@ -1,10 +1,10 @@
-﻿import {useMemo, useState} from 'react';
+﻿import { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import {getPredictionDemo} from '../services/difyClient.js';
-import {PATIENT_PROFILE} from '../mockData.js';
+import { getPrediction, getPredictionDemo } from '../services/apiClient.js';
+import { PATIENT_PROFILE } from '../mockData.js';
 import './QuickActions.css';
 
-function QuickActions({surveyQuestions}) {
+function QuickActions({ surveyQuestions }) {
     const [surveyOpen, setSurveyOpen] = useState(false);
     const [surveyState, setSurveyState] = useState({}); // { [questionId]: 1..5 }
     const [surveyConfirmed, setSurveyConfirmed] = useState(false);
@@ -34,7 +34,7 @@ function QuickActions({surveyQuestions}) {
     };
 
     const handleSurveyChange = (questionId, value) => {
-        setSurveyState((prev) => ({...prev, [questionId]: Number(value)}));
+        setSurveyState((prev) => ({ ...prev, [questionId]: Number(value) }));
     };
 
     const handleSurveyClose = () => {
@@ -95,8 +95,14 @@ function QuickActions({surveyQuestions}) {
 
 
     const handlePrediction = async () => {
-        const result = await getPredictionDemo();
-        setToast(`${result.title}: ${result.detail}`);
+        try {
+            const result = await getPrediction('patient-1');
+            setToast(`${result.title || 'Prediction'}: ${result.detail || result.message || JSON.stringify(result)}`);
+        } catch (error) {
+            console.warn('Backend prediction failed, using demo:', error);
+            const result = await getPredictionDemo();
+            setToast(`${result.title}: ${result.detail}`);
+        }
     };
 
     const handleStatusLog = () => {

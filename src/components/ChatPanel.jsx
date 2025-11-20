@@ -1,10 +1,10 @@
-﻿import {useState, useRef, useEffect} from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
-import {sendChatMessageStream} from '../services/difyClient.js';
+import { sendChatMessageStream } from '../services/apiClient.js';
 import './ChatPanel.css';
 
-function ChatPanel({initialMessages, statusUpdates}) {
+function ChatPanel({ initialMessages, statusUpdates }) {
     const [messages, setMessages] = useState(initialMessages);
     const [input, setInput] = useState('');
     const [isSending, setIsSending] = useState(false);
@@ -26,13 +26,13 @@ function ChatPanel({initialMessages, statusUpdates}) {
         event.preventDefault();
         if (!input.trim()) return;
 
-        const userMsg = {role: 'user', content: input.trim()};
+        const userMsg = { role: 'user', content: input.trim() };
         setMessages((prev) => [...prev, userMsg]);
         setInput('');
         setIsSending(true);
 
         // AI 占位消息
-        const aiMsg = {role: 'assistant', content: ''};
+        const aiMsg = { role: 'assistant', content: '' };
         setMessages((prev) => {
             const newMsgs = [...prev, aiMsg];
             aiIndexRef.current = newMsgs.length - 1;
@@ -60,7 +60,7 @@ function ChatPanel({initialMessages, statusUpdates}) {
             console.error(error);
             setMessages((prev) => [
                 ...prev,
-                {role: 'assistant', content: '⚠️ 出错了，请稍后再试。'}
+                { role: 'assistant', content: '⚠️ 出错了，请稍后再试。' }
             ]);
         } finally {
             setIsSending(false);
