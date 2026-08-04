@@ -1,130 +1,99 @@
-// API client for smart-stress-agent backend
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_BACKEND_URL || "";
+// 自动判断环境：如果是开发模式用 localhost:8000，如果是生产模式(被Python托管)用相对路径
+const baseURL = import.meta.env.DEV ? "http://localhost:8000" : "";
 
 export const client = axios.create({
     baseURL: baseURL,
     headers: {
         "Content-Type": "application/json",
     },
-    timeout: 30000, // 30 second timeout
+    timeout: 30000,
 });
 
 /**
- * Send a chat message and receive a blocking response
- * @param {string} message - The user's message
- * @param {string} conversationId - Optional conversation ID for context
- * @returns {Promise<string>} The assistant's response
+ * 1. 启动新会话 (对应 /api/start_session)
+ * 用于 ChatPanel 初始化
  */
-export async function sendChatMessage(message, conversationId = null) {
-    const response = await client.post('/chat', {
-        message: message,
-        conversation_id: conversationId,
-    });
-
-    return response.data.response || response.data.answer || response.data.message;
+export async function startSession(userId = "web-user", sessionId = "session-" + Date.now()) {
+    try {
+        const response = await client.post('/api/start_session', {
+            user: {
+                user_id: userId,
+                session_id: sessionId,
+                traits: {}
+            },
+            // 可选：传入初始传感器数据
+            initial_sensor_data: {
+                timestamp: new Date().toISOString(),
+                values: { hr: 75 }
+            }
+        });
+        // 返回 session handle (凭证) 和初始视图
+        return {
+            handle: response.data.handle,
+            state: response.data.view
+        };
+    } catch (error) {
+        console.error("Start session failed:", error);
+        throw error;
+    }
 }
 
 /**
- * Send a chat message with streaming response
- * @param {string} message - The user's message
- * @param {Function} onMessage - Callback function to handle each chunk
- * @param {Object} conversationIdRef - Ref object to store conversation ID
+ * 2. 发送消息并获取回复 (对应 /api/continue_session)
+ * 用于 ChatPanel 发送消息
  */
-export async function sendChatMessageStream(message, onMessage, conversationIdRef) {
-    const response = await fetch(`${baseURL}/chat/stream`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            message: message,
-            conversation_id: conversationIdRef.current || undefined,
-        }),
-    });
-
-    if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`HTTP ${response.status}: ${text}`);
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let buffer = "";
-
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-
-        // Handle different streaming formats
-        // Format 1: Server-Sent Events (SSE)
-        if (buffer.includes("data:")) {
-            const parts = buffer.split("\n\n");
-            buffer = parts.pop();
-
-            for (const part of parts) {
-                if (!part.startsWith("data:")) continue;
-                const jsonStr = part.slice(5).trim();
-                if (!jsonStr || jsonStr === "[DONE]") continue;
-
-                try {
-                    const event = JSON.parse(jsonStr);
-                    // Handle different response formats
-                    if (event.chunk || event.delta || event.content) {
-                        onMessage(event.chunk || event.delta || event.content);
-                    } else if (event.message) {
-                        onMessage(event.message);
-                    }
-                    if (event.conversation_id) {
-                        conversationIdRef.current = event.conversation_id;
-                    }
-                } catch (err) {
-                    console.error("Failed to parse streaming event:", err, jsonStr);
-                }
+export async function sendMessage(sessionHandle, message) {
+    try {
+        const response = await client.post('/api/continue_session', {
+            session_handle: sessionHandle, // 必须带上凭证
+            user_message: {
+                role: "user",
+                content: message
             }
-        }
-        // Format 2: Newline-delimited JSON
-        else if (buffer.includes("\n")) {
-            const lines = buffer.split("\n");
-            buffer = lines.pop();
+        });
 
-            for (const line of lines) {
-                if (!line.trim()) continue;
-                try {
-                    const event = JSON.parse(line);
-                    if (event.chunk || event.delta || event.content) {
-                        onMessage(event.chunk || event.delta || event.content);
-                    } else if (event.message) {
-                        onMessage(event.message);
-                    }
-                    if (event.conversation_id) {
-                        conversationIdRef.current = event.conversation_id;
-                    }
-                } catch (err) {
-                    console.error("Failed to parse JSON line:", err, line);
-                }
-            }
-        }
+        // 解析后端返回的最新状态
+        const history = response.data.view.conversation_history;
+        // 获取最后一条 AI 的回复
+        const lastMessage = history.length > 0 ? history[history.length - 1] : null;
+
+        return {
+            handle: response.data.handle, // 更新 handle
+            response: lastMessage ? lastMessage.content : "No response",
+            fullState: response.data.view
+        };
+    } catch (error) {
+        console.error("Send message failed:", error);
+        throw error;
     }
 }
 
 /**
  * Get stress prediction for a patient
- * @param {string} patientId - The patient ID
- * @returns {Promise<Object>} Prediction data
+ * 用于 QuickActions 组件
  */
 export async function getPrediction(patientId = 'patient-1') {
+    // 注意：目前的后端 server.py 似乎没有暴露 /predict 接口。
+    // 为了防止报错，这里直接返回 Mock 数据。
+    // 如果未来后端实现了该接口，可以取消注释下面的代码：
+    /*
     const response = await client.post('/predict', {
         patient_id: patientId
     });
     return response.data;
+    */
+
+    return {
+        title: 'Forecast result',
+        detail: 'Stable outlook (Mocked on frontend as backend API is pending).'
+    };
 }
 
 /**
  * Demo prediction function (fallback)
- * @returns {Promise<Object>}
+ * 用于 QuickActions 组件在请求失败时的回退
  */
 export async function getPredictionDemo() {
     return {
